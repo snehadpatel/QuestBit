@@ -136,45 +136,45 @@ Every system architecture document must meet the following criteria before it ca
     - [x] Dynamic font switching (standard vs. dyslexia-optimized) and layout reflow budgets
     - [x] Zero placeholders or TBDs
 
-- [ ] **15. Save System** — status: not started
+- [x] **15. Save System** — status: completed
   - *File*: `docs/architecture/15_save_system.md`
   - *DoD Sub-Checklist*:
-    - [ ] Save-game schema in JSON/Protocol Buffers, local-first encryption, and migration policy
-    - [ ] Conflict resolution rules for offline play and async cloud sync (no streak-shaming, no progress loss)
-    - [ ] Data minimization compliance (zero PII storage, local only by default, parental PIN gates)
-    - [ ] Zero placeholders or TBDs
+    - [x] Save-game schema in JSON/Protocol Buffers, local-first encryption, and migration policy
+    - [x] Conflict resolution rules for offline play and async cloud sync (no streak-shaming, no progress loss)
+    - [x] Data minimization compliance (zero PII storage, local only by default, parental PIN gates)
+    - [x] Zero placeholders or TBDs
 
-- [ ] **16. Data Pipeline (Analytics/Telemetry)** — status: not started
+- [x] **16. Data Pipeline (Analytics/Telemetry)** — status: completed
   - *File*: `docs/architecture/16_data_pipeline.md`
   - *DoD Sub-Checklist*:
-    - [ ] Analytics telemetry JSON schema, batching logic, local queue caching, and payload sizes
-    - [ ] Rigorous compliance rules: COPPA, GDPR-K, no third-party tracking SDKs, zero advertising ID leakage
-    - [ ] Educational analytics structure (learning milestones, Clue Journal logs, productive struggle time)
-    - [ ] Zero placeholders or TBDs
+    - [x] Analytics telemetry JSON schema, batching logic, local queue caching, and payload sizes
+    - [x] Rigorous compliance rules: COPPA, GDPR-K, no third-party tracking SDKs, zero advertising ID leakage
+    - [x] Educational analytics structure (learning milestones, Clue Journal logs, productive struggle time)
+    - [x] Zero placeholders or TBDs
 
-- [ ] **17. Inventory System** — status: not started
+- [x] **17. Inventory System** — status: completed
   - *File*: `docs/architecture/17_inventory_system.md`
   - *DoD Sub-Checklist*:
-    - [ ] Class definitions, inventory database schema, and item definition asset patterns
-    - [ ] Item replication logic (local-first) and unlimited space for crafting materials
-    - [ ] UI layout mapping interface (e.g., drag-and-combine workbench integration per GDD Ch. 2.6)
-    - [ ] Zero placeholders or TBDs
+    - [x] Class definitions, inventory database schema, and item definition asset patterns
+    - [x] Item replication logic (local-first) and unlimited space for crafting materials
+    - [x] UI layout mapping interface (e.g., drag-and-combine workbench integration per GDD Ch. 2.6)
+    - [x] Zero placeholders or TBDs
 
-- [ ] **18. Dialogue System** — status: not started
+- [x] **18. Dialogue System** — status: completed
   - *File*: `docs/architecture/18_dialogue_system.md`
   - *DoD Sub-Checklist*:
-    - [ ] Dialogue tree graph structure JSON schema and runtime node-traversal logic
-    - [ ] Audio sync hooks for voiced lines, text speed management, and dyslexia spacing overrides
-    - [ ] Integration with Event Bus to fire gameplay state changes based on narrative branches
-    - [ ] Zero placeholders or TBDs
+    - [x] Dialogue tree graph structure JSON schema and runtime node-traversal logic
+    - [x] Audio sync hooks for voiced lines, text speed management, and dyslexia spacing overrides
+    - [x] Integration with Event Bus to fire gameplay state changes based on narrative branches
+    - [x] Zero placeholders or TBDs
 
-- [ ] **19. Quest System** — status: not started
+- [x] **19. Quest System** — status: completed
   - *File*: `docs/architecture/19_quest_system.md`
   - *DoD Sub-Checklist*:
-    - [ ] Quest state machine model (NotStarted, Active, ConditionsMet, Completed) and database schema
-    - [ ] Mastery Engine integration: adaptive quest parameters and learning path evaluation
-    - [ ] Offline state persistence, async co-op Quest syncing (e.g., Community Docks), and reward payout
-    - [ ] Zero placeholders or TBDs
+    - [x] Quest state machine model (NotStarted, Active, ConditionsMet, Completed) and database schema
+    - [x] Mastery Engine integration: adaptive quest parameters and learning path evaluation
+    - [x] Offline state persistence, async co-op Quest syncing (e.g., Community Docks), and reward payout
+    - [x] Zero placeholders or TBDs
 
 - [ ] **20. AI System (Challenge Creatures)** — status: not started
   - *File*: `docs/architecture/20_ai_system.md`
