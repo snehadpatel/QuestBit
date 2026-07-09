@@ -24,7 +24,7 @@ This document does not define every individual puzzle in the game. It defines th
 
 - Puzzles must support the asymmetric reality model defined in [docs/GDD/06 Asymmetric Reality.md](docs/GDD/06%20Asymmetric%20Reality.md).
 - Puzzle logic must integrate with the objective system in [docs/GDD/09 Objective System.md](docs/GDD/09%20Objective%20System.md).
-- Puzzles must feed into the creature pressure model in [docs/GDD/10 Monster AI.md](docs/GDD/10%20Monster%20AI.md).
+- Puzzle failure and unresolved observations feed the shared pressure model in [docs/GDD/11 Stress System.md](docs/GDD/11%20Stress%20System.md), which is the sole authority for pressure/threat values. This document no longer defines its own pressure formula (see §Balancing Philosophy).
 - Puzzle completion and failure must be visible to the UI and reflected in the match state.
 - The system must support 2–4 players online and remain deterministic under network variance.
 
@@ -172,7 +172,7 @@ Each puzzle should be represented by a data structure with the following fields:
 - FailureBehavior: penalty model, reset behavior, or escalation behavior
 - SuccessBehavior: reward state, objective unlock, or room state change
 - ResetCooldown: time before the puzzle can be retried
-- PressureWeight: how much failure affects creature escalation
+- FailureSeverityTier: `Minor`, `Moderate`, or `Severe` — looked up directly against the Noise contribution table in [11 Stress System.md](docs/GDD/11%20Stress%20System.md) (+1.50 / +2.25 / +3.00 respectively). This field replaces the former free-floating `PressureWeight` value; puzzles no longer compute a pressure delta themselves, they only classify their own failure severity.
 - AuthoringVersion: schema revision for save compatibility
 
 ## Puzzle Runtime Interface
@@ -255,26 +255,26 @@ The target balance is not “hard” or “easy.” The target balance is “leg
 
 ### Difficulty Formula
 
-A practical puzzle difficulty score can be estimated as:
+A practical puzzle difficulty score, `Diff`, can be estimated as:
 
-$$D = C + I + T + F$$
+$$Diff = C_d + I_d + T_d + F_d$$
 
-Where:
+Where each term is scored 0–2.5 by the designer against the rubric below (chosen so `Diff` naturally falls in the 0–10 range without post-hoc scaling):
 
-- $C$ = communication demand
-- $I$ = information scarcity
-- $T$ = time pressure
-- $F$ = failure consequence
+| Term | 0 | 1 | 2 | 2.5 |
+|---|---|---|---|---|
+| $C_d$ communication demand | Solvable by one player alone | Needs one clarifying exchange | Needs sustained back-and-forth | Needs simultaneous coordinated action from all present players |
+| $I_d$ information scarcity | All required info visible to the solving player(s) | One piece of info held by another player | Multiple pieces split across players | Info must be inferred, not just relayed |
+| $T_d$ time pressure | No timer/pressure interaction | Solvable comfortably under Tense band | Meaningfully harder under Critical band | Intended primarily as a Collapse-window puzzle |
+| $F_d$ failure consequence | Maps to `FailureSeverityTier: Minor` | — | Maps to `FailureSeverityTier: Moderate` | Maps to `FailureSeverityTier: Severe` |
 
-The MVP should keep most puzzle difficulty values between 3 and 7 on a 10-point scale. Values above 8 should be rare and reserved for special pacing moments.
+(Renamed from the prior `D` to `Diff` specifically to avoid collision with 11 Stress System's Delay meter `D` — the two systems previously reused the same symbol for unrelated values, which this remediation pass corrects.)
 
-### Pressure Escalation Rule
+The MVP should keep most puzzle `Diff` values between 3 and 7 on a 10-point scale. Values above 8 should be rare and reserved for special pacing moments, and should generally carry `FailureSeverityTier: Severe`.
 
-Each failed puzzle attempt should increase pressure by a bounded amount:
+### Pressure Contribution
 
-$$P_{next} = P_{current} + min(2, 1 + F_{severity})$$
-
-Where $F_{severity}$ is the severity of the failure consequence. This ensures that repeated failure escalates danger without invalidating the run immediately.
+Puzzle failure no longer computes its own escalation value. On `OnFailure`, the puzzle reports its `FailureSeverityTier` to the Pressure System, which applies the fixed Noise contribution defined in [11 Stress System.md § Event → Meter Contribution Tables](docs/GDD/11%20Stress%20System.md). Unresolved `RequiredObservations` older than 20 seconds separately and automatically contribute to the Uncertainty meter in the same document — puzzle authors do not need to trigger this manually; it is driven by the observation's Unshared/Shared/Confirmed state from 05 Communication System.
 
 ## Networking Considerations
 
@@ -291,7 +291,8 @@ The following puzzle data should be replicated:
 - Dependency flags
 - Failure cooldowns
 - Reward unlock status
-- Current pressure contribution
+
+Note: pressure contribution itself is not part of puzzle state — it is reported once as an event to the Pressure System (11 Stress System.md) on failure/resolution and is not stored or replicated by the puzzle system.
 
 ### Late Joiners
 
@@ -349,7 +350,7 @@ The puzzle system should support a dedicated debug panel that exposes:
 - Dependency graph
 - Active clue set
 - Failure and success conditions
-- Pressure contribution
+- `FailureSeverityTier` (read-only here; see 11 Stress System.md for the debug commands that manipulate the resulting meters directly)
 - Which player is currently relevant to the puzzle
 - Whether the puzzle is waiting on communication or on environmental state
 
@@ -388,11 +389,14 @@ sequenceDiagram
     participant P as Player
     participant S as Puzzle System
     participant O as Objective System
-    participant C as Creature System
+    participant PS as Pressure System
+    participant C as Monster AI
     P->>S: Submit Interaction
     S->>S: Validate State
     S->>O: Report Progress
-    O->>C: Raise Pressure Signal
+    S->>PS: Report FailureSeverityTier (on failure only)
+    PS->>PS: Update N, U, D, T, P, Band
+    PS->>C: Expose current Band and T (read-only)
     S->>P: Broadcast Feedback
 ```
 

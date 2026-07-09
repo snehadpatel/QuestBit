@@ -12,7 +12,8 @@ Includes milestone planning, release sequencing, and the prioritization logic fo
 
 - The vision and high-concept documents must remain stable.
 - The vertical slice must validate the communication-first gameplay loop.
-- Production milestones must reflect the team’s staffing and tooling limits.
+- Production milestones must reflect the team's staffing and tooling limits.
+- The "Architecture and Tools" milestone below is gated on the networking topology decision now recorded in [ADR-0002](../technical/ADR/0002-network-topology-host-mode.md) (Fusion Host Mode, no dedicated servers) — this decision is resolved as of this remediation pass and should not consume further schedule time; it was previously an unresolved contradiction between Multiplayer.md and Backend.md that would have blocked "Core Co-op Loop" work if discovered mid-implementation instead of now.
 
 ## Diagrams
 

@@ -17,21 +17,24 @@ This document does not recreate full PlayFab implementation documentation.
 
 ## Dependencies
 
-- PlayFab is the primary backend service for persistence and account operations.
-- Photon Fusion 2 provides the real-time multiplayer transport.
+- PlayFab is the primary backend service for persistence, account operations, and matchmaking-ticket/lobby coordination. **PlayFab does not run or host the game simulation** — that distinction is the fix this remediation pass makes to this document (see §Backend Service Flow below).
+- Photon Fusion 2 provides the real-time multiplayer transport, running in Host Mode ([ADR-0002](../../technical/ADR/0002-network-topology-host-mode.md)) — the game simulation runs on a connected player's client (the elected Host), never on backend-owned infrastructure.
 - Steam integration and Vivox integration must route through the backend service architecture in a controlled manner.
 
 ## Diagrams
 
 ### Backend Service Flow
 
+**Corrected in this remediation pass:** the prior version of this diagram showed a "Game Server / Session" node between the client and PlayFab, which read as a dedicated game server — directly contradicting Multiplayer.md's host-migration model. Per [ADR-0002](../../technical/ADR/0002-network-topology-host-mode.md), there is no dedicated game server; PlayFab coordinates identity, matchmaking tickets, and persistence only, and the actual game session runs peer-to-peer via Photon Fusion Host Mode once PlayFab has connected the players.
+
 ```mermaid
 flowchart TD
-    A[Client] --> B[Game Server / Session]
-    B --> C[PlayFab Services]
-    C --> D[Cloud Save]
-    C --> E[Matchmaking]
-    C --> F[Analytics and Events]
+    A[Client] --> B[PlayFab: Authenticate and Identity]
+    A --> C[PlayFab: Matchmaking Ticket / Lobby]
+    C --> D[Photon Fusion Session created by Host client]
+    D --> E[Other clients join Photon Session directly]
+    B --> F[PlayFab: Cloud Save]
+    B --> G[PlayFab: Analytics and Events]
 ```
 
 ### Backend Event Flow
@@ -40,11 +43,16 @@ flowchart TD
 sequenceDiagram
     participant C as Client
     participant P as PlayFab
-    participant M as Matchmaker
+    participant H as Host Client (Session Authority)
+    participant O as Other Clients
     C->>P: Authenticate
-    P->>M: Request Session
-    M->>C: Return Session Info
+    C->>P: Request/Create Matchmaking Ticket or Lobby
+    P->>C: Return Photon Session Name + connected player list
+    C->>H: (if elected host) Create Photon Fusion Session
+    O->>H: Join Photon Fusion Session directly (Photon relay, not PlayFab)
 ```
+
+Note the explicit boundary: **PlayFab never brokers or proxies live game-state traffic.** Its role ends at handing clients a Photon Session identifier; from that point, all real-time gameplay traffic (including the Pressure System's `PressureSnapshot`, per 11 Stress System.md) flows over the Photon connection directly between clients, with the elected Host as authority.
 
 ## Examples
 
@@ -60,9 +68,9 @@ A player disconnects and later returns. Their account state and progression are 
 
 - PlayFab services are temporarily unavailable during a session.
 - A player’s identity cannot be resolved due to authentication issues.
-- Matchmaking returns a session that later becomes unavailable.
+- Matchmaking returns a Photon Session that later becomes unavailable (host closed it, or it never actually formed) — the client must detect this and return to matchmaking rather than hang.
 - Cloud save conflicts occur after a reconnect or device change.
-- A session state cannot be recovered after a host drop.
+- A host drop is handled by Fusion's native host migration (technical/NetworkArchitecture.md §Host Migration), not by this backend — PlayFab is not involved in mid-session recovery since it was never in the game-state path to begin with.
 
 ## Design Decisions
 
@@ -95,6 +103,7 @@ The team should be able to inspect authentication failures, session issues, and 
 - Define a backend contract for account login, session creation, player state save, progression sync, and analytics events.
 - Handle all service failures gracefully with fallback logic where possible.
 - Normalize data schemas to reduce ambiguity between game client and backend systems.
+- **Progression/currency/unlock writes must go through PlayFab CloudScript server-side validation with sanity bounds, not accept raw client-submitted values.** This is the anti-cheat boundary defined in [technical/NetworkArchitecture.md §Anti-Cheat Assumptions](../../technical/NetworkArchitecture.md#anti-cheat-assumptions): live match state trusts the Host fully (ADR-0002's accepted risk), but persistent PlayFab writes do not, because their consequences outlive the match. Each client submits its own results independently per [technical/NetworkArchitecture.md §Save Synchronization](../../technical/NetworkArchitecture.md#save-synchronization) — this document's matchmaking/session role ends before any progression write occurs.
 
 ## Future Improvements
 

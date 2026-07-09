@@ -18,7 +18,9 @@ This document does not define every lore-specific creature form or every future 
 
 ## Dependencies
 
-- The creature system must integrate with the objective system, player systems, stress system, and audio system.
+- The creature system must integrate with the objective system, player systems, and audio system.
+- **The creature's escalation state is driven entirely by [docs/GDD/11 Stress System.md](docs/GDD/11%20Stress%20System.md), which is the sole authority for pressure/threat. This document no longer defines its own threat score (see §State Model below); it defines behavior, movement, and perception only.**
+- This document is, conversely, the sole *source* of raw proximity/line-of-sight data that 11 Stress System.md consumes to compute the Threat meter — the creature owns sensing, the Pressure System owns scoring.
 - The behavior must be readable enough for players to interpret, but not so obvious that it becomes predictable.
 - It must operate reliably under networked conditions and remain understandable in a 2–4 player session.
 
@@ -28,11 +30,11 @@ This document does not define every lore-specific creature form or every future 
 
 ```mermaid
 flowchart TD
-    A[Observe Team Behavior] --> B[Evaluate Threat Input]
-    B --> C[Choose Pressure State]
-    C --> D[Perform Action]
-    D --> E[Update Threat Level]
-    E --> F[Reassess]
+    A[Sense Player Distance and Line of Sight] --> PS[Report raw sensor data to Pressure System]
+    PS --> B[Read current Band and T from Pressure System]
+    B --> C[Resolve FSM State per State Model table]
+    C --> D[Perform Action for Current State]
+    D --> A
 ```
 
 ### Creature State Machine
@@ -40,14 +42,32 @@ flowchart TD
 ```mermaid
 stateDiagram-v2
     [*] --> Inactive
-    Inactive --> Probing
-    Probing --> Tracking
-    Tracking --> Hunting
-    Hunting --> Retreating
-    Retreating --> Probing
-    Tracking --> Stalled
-    Stalled --> Probing
+    Inactive --> Probing: match start
+    Probing --> Tracking: Band = Tense
+    Tracking --> Probing: Band = Calm
+    Tracking --> Hunting: Band = Critical AND T >= 6.0
+    Tracking --> Hunting: Collapse event (forced)
+    Hunting --> Retreating: Band <= Tense
+    Retreating --> Probing: Band = Calm
+    Retreating --> Tracking: Band = Tense
+    Tracking --> Stalled: pathing failure
+    Stalled --> Probing: pathing recovered
 ```
+
+### State Model (Authoritative)
+
+The creature has no independent threat score. Its five states are a direct function of the current Pressure Band and the Threat meter `T`, both read from [11 Stress System.md](docs/GDD/11%20Stress%20System.md):
+
+| State | Entry condition | Exit condition |
+|---|---|---|
+| Inactive | Pre-match | Match start -> Probing |
+| Probing | Band = Calm | Band >= Tense -> Tracking |
+| Tracking | Band = Tense | Band = Calm -> Probing; Band = Critical and T >= 6.0 -> Hunting; pathing failure -> Stalled |
+| Hunting | Band = Critical and T >= 6.0, or any Collapse event (unconditional) | Band <= Tense -> Retreating |
+| Retreating | Exiting Hunting | Band = Calm -> Probing; Band = Tense -> Tracking |
+| Stalled | Pathing/navmesh failure while Tracking | Pathing recovers -> Probing |
+
+The `T >= 6.0` gate on Hunting (rather than Band alone) is what keeps the creature "partially readable, not fully predictable" (Design Decision 3): a team can be in the Critical band without being hunted if the creature has no proximity read on them, and a Collapse event always forces Hunting regardless of local proximity, representing the creature converging on the team's last known area.
 
 ## Examples
 
@@ -104,19 +124,19 @@ The creature should feel like a force that tests the team, not an entity that pu
 
 ## Developer Notes
 
-- Implement creature behavior as a state-driven system with clear transitions and scoring inputs.
-- Separate perception, intent, movement, and action into distinct modules.
-- Use a threat score that increases with specific player actions and environmental disturbances.
+- Implement creature behavior as a state-driven system per the §State Model table above; the creature computes no scoring of its own beyond raw distance/line-of-sight sensing.
+- Separate perception, intent, movement, and action into distinct modules. Perception's only output to the Pressure System is `distance_to_nearest_player` and a boolean line-of-sight flag, sampled every tick (10 Hz, matching 11 Stress System.md's tick rate).
 - Keep creature movement paths legible and understandable in the environment.
-- The creature should produce different audio and visual signals in each state so players can interpret its intent.
+- The creature should produce different audio and visual signals in each state so players can interpret its intent (see 18 Audio.md).
 
 ## Implementation Notes
 
-- Define a threat input model with categories such as Noise, Panic, Delay, Objective Failure, and Environmental Disturbance.
-- Represent creature states as Probing, Tracking, Hunting, Retreating, and Stalled.
-- Ensure that creature actions are replicated authoritatively and visible to all clients.
+- Do not implement a local threat/pressure score. The creature FSM reads `Band` and `T` from the replicated `PressureSnapshot` defined in 11 Stress System.md and transitions per the §State Model table — implementing a parallel score here would immediately desync from the authoritative value and is the exact bug class this remediation pass exists to prevent.
+- Represent creature states as Probing, Tracking, Hunting, Retreating, and Stalled, per the state table above.
+- Ensure that creature actions are replicated authoritatively and visible to all clients, using the same session-authority model as `PressureSnapshot` (see technical/NetworkArchitecture.md and ADR-0002).
 - Avoid making the creature rely on pathfinding in ways that create inconsistent or visually confusing behavior.
 - Use a small set of reusable movement patterns rather than a fully complex behavior tree for the MVP.
+- Detection Radius for line-of-sight/proximity sensing is fixed at 18.0m for the MVP, matching the constant used in 11 Stress System.md's Threat formula — this value must not be tuned independently in this document; change it in 11 Stress System.md and this document inherits it by reference.
 
 ## Future Improvements
 

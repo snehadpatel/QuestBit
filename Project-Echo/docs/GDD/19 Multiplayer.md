@@ -20,7 +20,7 @@ This document does not replace the technical network architecture document.
 ## Dependencies
 
 - The game is designed for 2–4 players online.
-- Photon Fusion 2 is the networking backend.
+- Photon Fusion 2 is the networking backend, running in **Host Mode** ([ADR-0002](../../technical/ADR/0002-network-topology-host-mode.md)) — a connected player's client is the Session Authority, not a dedicated server. This document's "Host" throughout means that elected client.
 - The design must remain compatible with Steam and PlayFab services.
 - Multiplayer must support voice communication, real-time shared objectives, and asymmetric player perception.
 
@@ -53,7 +53,7 @@ flowchart TD
 
 ### Example 1: Host Migration
 
-The host disconnects during a match. The session transitions to a new host and the match continues without a restart if the game state remains valid. The team should not lose the objective progress already achieved.
+The host disconnects during a match. Fusion elects a new host from the remaining clients, which receives the last acknowledged Pressure/Puzzle/Objective snapshot per technical/NetworkArchitecture.md §Host Migration, and the match continues without a restart. The team does not lose the objective progress already achieved, and — critically — the team's accumulated Pressure (11 Stress System.md) does not reset to Calm as a side effect of the migration; a migration must never function as a free difficulty reset.
 
 ### Example 2: Late Joiner
 
@@ -76,7 +76,7 @@ Two players are trying to solve a puzzle while the creature escalates. Voice com
 
 ### Decision 1: Match State Must Be Authoritative
 
-Critical match state such as objective progress, creature behavior, and environmental hazards should be resolved by authoritative systems rather than client-side assumptions. This preserves consistency and fairness.
+Critical match state such as objective progress, creature behavior, environmental hazards, and Pressure/Stress is resolved exclusively by the elected Host under Fusion Host Mode (ADR-0002), never by client-side assumptions. This preserves consistency and fairness at zero dedicated-hosting cost — the explicit trade-off recorded in ADR-0002 is that the Host has full authority and is trusted not to be adversarial, which is acceptable for private, invite-based 2–4 player sessions.
 
 ### Decision 2: The Game Should Support Seamless Rejoin Where Possible
 
@@ -115,7 +115,8 @@ If a match goes badly because of network issues or player error, the team should
 - Build session management around deterministic match state transitions.
 - Use standard event logging for session start, host change, player connect, player disconnect, and match end.
 - Keep the lobby flow simple and reliable for first-time players.
-- Provide a lightweight reconnect handshake so returning players can recover their context without a full state rebuild.
+- Reconnect procedure, grace window (60 seconds), and state hand-off are fully specified in [technical/NetworkArchitecture.md §Disconnect Recovery](../../technical/NetworkArchitecture.md#disconnect-recovery-non-host) (non-host) and [§Host Migration](../../technical/NetworkArchitecture.md#host-migration) (host) — this document does not redefine those procedures, only requires that they exist.
+- **Minimum viable party size to continue a match:** 1 remaining connected player after any disconnect (the match does not force-end just because the team has shrunk to a solo player) — the match ends only if the sole remaining player also disconnects, or manually quits. This is the value technical/NetworkArchitecture.md's §Disconnect Recovery references as "owned by this document."
 
 ## Future Improvements
 

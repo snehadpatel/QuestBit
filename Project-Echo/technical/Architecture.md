@@ -19,7 +19,7 @@ This document does not replace engine-specific implementation files.
 
 - Unity 6 is the engine runtime.
 - C# is the implementation language.
-- Photon Fusion 2 provides authoritative networking services.
+- Photon Fusion 2 provides authoritative networking services, in Host Mode ([ADR-0001](ADR/0001-photon-fusion-2-as-networking-middleware.md), [ADR-0002](ADR/0002-network-topology-host-mode.md)) — `GameStateManager` below runs on whichever connected client is the elected Host, not on separate infrastructure.
 - PlayFab provides account and persistence services.
 - Vivox provides voice communication.
 
@@ -43,12 +43,18 @@ flowchart TD
 
 ```mermaid
 flowchart LR
-    A[GameStateManager] --> B[ObjectiveSystem]
+    A[GameStateManager - runs on elected Host] --> B[ObjectiveSystem]
     A --> C[CreatureSystem]
     A --> D[PlayerSystem]
     A --> E[PuzzleSystem]
-    A --> F[UISystem]
+    A --> G[PressureSystem]
+    A --> F[UISystem - local to each client]
+    B --> G
+    E --> G
+    G --> C
 ```
+
+`PressureSystem` (11 Stress System.md) was missing from this diagram in the prior version of this document — a gap, since it's the system Objective, Puzzle, and Creature all now route through as the single authoritative escalation value (see 11 Stress System.md §Consuming Systems). `UISystem` is marked local because, unlike the other four, it runs identically but independently on every client rendering the replicated state — it is never authoritative.
 
 ## Examples
 
@@ -65,7 +71,7 @@ A player presses the interact key. The InputController sends a request to the In
 - The same object is used by multiple players in close succession.
 - A client sends an interaction request while the server is still resolving a prior action.
 - A network disconnect occurs during creature state transition.
-- The host leaves after objective state has already changed.
+- The host leaves after objective state has already changed — resolved by Fusion's native host migration with state hand-off; see technical/NetworkArchitecture.md §Host Migration.
 
 ## Design Decisions
 

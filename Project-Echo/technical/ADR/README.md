@@ -34,6 +34,14 @@ A decision to use explicit state machines rather than ad hoc flags should be cap
 - ADRs should be concise but specific.
 - Each record should state the problem, decision, rationale, and consequences.
 - The team should update ADRs if a decision changes later.
+- Format: numbered files (`NNNN-short-title.md`), each with Status, Problem, Decision, Rationale, Alternatives Considered, Consequences, and Related Documents — this resolves the "what format will the team use" open question below by example rather than by further discussion.
+
+## Index
+
+| ADR | Decision |
+|---|---|
+| [0001](0001-photon-fusion-2-as-networking-middleware.md) | Use Photon Fusion 2 as the multiplayer networking middleware |
+| [0002](0002-network-topology-host-mode.md) | Network topology: Host Mode (client-hosted, with migration), not Shared Mode or dedicated servers |
 
 ## Future Improvements
 
@@ -49,6 +57,5 @@ A decision to use explicit state machines rather than ad hoc flags should be cap
 
 ## Open Questions
 
-- What ADR format will the team use for the first milestone?
-- Which early technical decisions should be documented first?
-- How often should ADRs be reviewed as the project evolves?
+- Which early technical decisions should be documented first? Networking middleware and topology are now recorded (0001, 0002); the next candidates are the state-machine framework approach (technical/StateMachines.md's own open question) and the save-schema versioning approach (22 Save System.md).
+- How often should ADRs be reviewed as the project evolves? Owner: Technical Direction, revisit at each milestone gate in Milestones.md.
