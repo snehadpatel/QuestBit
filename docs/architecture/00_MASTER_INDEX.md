@@ -176,53 +176,53 @@ Every system architecture document must meet the following criteria before it ca
     - [x] Offline state persistence, async co-op Quest syncing (e.g., Community Docks), and reward payout
     - [x] Zero placeholders or TBDs
 
-- [ ] **20. AI System (Challenge Creatures)** — status: not started
+- [x] **20. AI System (Challenge Creatures)** — status: completed
   - *File*: `docs/architecture/20_ai_system.md`
   - *DoD Sub-Checklist*:
-    - [ ] Non-combat AI architecture (behavior trees / utility AI) and state contracts
-    - [ ] Cognitive difficulty limits, adaptive pacing (e.g., Snagglecrab helper gates), and tick-rate constraints
-    - [ ] Frame time budget (<1.5ms total CPU budget) and NPC pathfinding models
-    - [ ] Zero placeholders or TBDs
+    - [x] Non-combat AI architecture (behavior trees / utility AI) and state contracts
+    - [x] Cognitive difficulty limits, adaptive pacing (e.g., Snagglecrab helper gates), and tick-rate constraints
+    - [x] Frame time budget (<1.5ms total CPU budget) and NPC pathfinding models
+    - [x] Zero placeholders or TBDs
 
-- [ ] **21. Networking Architecture** — status: not started
+- [x] **21. Networking Architecture** — status: completed
   - *File*: `docs/architecture/21_networking_architecture.md`
   - *DoD Sub-Checklist*:
-    - [ ] Async-only REST/GraphQL API contracts, sync queue manager, and retry back-off schemas
-    - [ ] Strict child safety: no real-time player chat, no lobbies, async ghost visuals, and parental sync gates
-    - [ ] Performance target: zero blocking calls on main thread, local simulation matches server sync
-    - [ ] Zero placeholders or TBDs
+    - [x] Async-only REST/GraphQL API contracts, sync queue manager, and retry back-off schemas
+    - [x] Strict child safety: no real-time player chat, no lobbies, async ghost visuals, and parental sync gates
+    - [x] Performance target: zero blocking calls on main thread, local simulation matches server sync
+    - [x] Zero placeholders or TBDs
 
-- [ ] **22. Performance Budget** — status: not started
+- [x] **22. Performance Budget** — status: completed
   - *File*: `docs/architecture/22_performance_budget.md`
   - *DoD Sub-Checklist*:
-    - [ ] CPU/GPU/Load-time budgets across target tiers: Low-end Tablet, Mobile, Console, WebGL
-    - [ ] Maximum frame-time allocation (60 FPS on high, 30 FPS minimum on low-end tablets)
-    - [ ] Battery consumption bounds and thermal throttling mitigation guidelines
-    - [ ] Zero placeholders or TBDs
+    - [x] CPU/GPU/Load-time budgets across target tiers: Low-end Tablet, Mobile, Console, WebGL
+    - [x] Maximum frame-time allocation (60 FPS on high, 30 FPS minimum on low-end tablets)
+    - [x] Battery consumption bounds and thermal throttling mitigation guidelines
+    - [x] Zero placeholders or TBDs
 
-- [ ] **23. Memory Budget** — status: not started
+- [x] **23. Memory Budget** — status: completed
   - *File*: `docs/architecture/23_memory_budget.md`
   - *DoD Sub-Checklist*:
-    - [ ] Heap allocations, textures, audio, physics, and code footprint budgets
-    - [ ] Target bounds (e.g., total footprint <1.5GB RAM for low-end tablets, <512MB for WebGL Chromebooks)
-    - [ ] Memory leaks checks, garbage collection (GC) spike limits, and object pooling requirements
-    - [ ] Zero placeholders or TBDs
+    - [x] Heap allocations, textures, audio, physics, and code footprint budgets
+    - [x] Target bounds (e.g., total footprint <1.5GB RAM for low-end tablets, <512MB for WebGL Chromebooks)
+    - [x] Memory leaks checks, garbage collection (GC) spike limits, and object pooling requirements
+    - [x] Zero placeholders or TBDs
 
-- [ ] **24. Testing Strategy** — status: not started
+- [x] **24. Testing Strategy** — status: completed
   - *File*: `docs/architecture/24_testing_strategy.md`
   - *DoD Sub-Checklist*:
-    - [ ] Testing framework setup, mocking layers, automated UI testing, and regression pipelines
-    - [ ] High-frequency input simulation for switch-scan accessibility options
-    - [ ] Integration validation for offline-to-online state transitions
-    - [ ] Zero placeholders or TBDs
+    - [x] Testing framework setup, mocking layers, automated UI testing, and regression pipelines
+    - [x] High-frequency input simulation for switch-scan accessibility options
+    - [x] Integration validation for offline-to-online state transitions
+    - [x] Zero placeholders or TBDs
 
-- [ ] **25. CI/CD Pipeline** — status: not started
+- [x] **25. CI/CD Pipeline** — status: completed
   - *File*: `docs/architecture/25_cicd_pipeline.md`
   - *DoD Sub-Checklist*:
-    - [ ] Automated build configurations, package compression, deployment pipelines, and compliance verification
-    - [ ] Automated asset validation (metadata checks, resolution scales, texture formats)
-    - [ ] Secure credential storage, child-safety scanners, and release build sign-off checklists
-    - [ ] Zero placeholders or TBDs
+    - [x] Automated build configurations, package compression, deployment pipelines, and compliance verification
+    - [x] Automated asset validation (metadata checks, resolution scales, texture formats)
+    - [x] Secure credential storage, child-safety scanners, and release build sign-off checklists
+    - [x] Zero placeholders or TBDs
 
 ---
 
