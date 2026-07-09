@@ -115,6 +115,7 @@ If a match goes badly because of network issues or player error, the team should
 - Build session management around deterministic match state transitions.
 - Use standard event logging for session start, host change, player connect, player disconnect, and match end.
 - Keep the lobby flow simple and reliable for first-time players.
+- **Constants Authority:** Session parameters (disconnect grace window, minimum viable party size, migration timeout, late join transfer budget) are owned by [`docs/GDD/Gameplay Constants Bible.md`](../docs/GDD/Gameplay%20Constants%20Bible.md) §Networking Constants. Values referenced inline in this document are for context only; edit the Bible to change them.
 - Reconnect procedure, grace window (60 seconds), and state hand-off are fully specified in [technical/NetworkArchitecture.md §Disconnect Recovery](../../technical/NetworkArchitecture.md#disconnect-recovery-non-host) (non-host) and [§Host Migration](../../technical/NetworkArchitecture.md#host-migration) (host) — this document does not redefine those procedures, only requires that they exist.
 - **Minimum viable party size to continue a match:** 1 remaining connected player after any disconnect (the match does not force-end just because the team has shrunk to a solo player) — the match ends only if the sole remaining player also disconnects, or manually quits. This is the value technical/NetworkArchitecture.md's §Disconnect Recovery references as "owned by this document."
 

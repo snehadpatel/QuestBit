@@ -66,6 +66,8 @@ stateDiagram-v2
 
 ## Variables and Units
 
+> **Constants Authority:** All numeric values in this section and in §Decay Rules, §Pressure Bands, and §Event → Meter Contribution Tables are owned by [`docs/GDD/Gameplay Constants Bible.md`](Gameplay%20Constants%20Bible.md). Values shown here are for readability and design context only. To change any threshold, rate, or contribution, edit the Bible — not this document.
+
 All values are `float`, computed server/host-side at a fixed **10 Hz tick rate** (every 100 ms). No client ever computes these values locally; clients only render the replicated snapshot (see §Networking Synchronization).
 
 | Symbol | Name | Range | Meaning |

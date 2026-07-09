@@ -27,6 +27,7 @@ This document does not define every individual puzzle in the game. It defines th
 - Puzzle failure and unresolved observations feed the shared pressure model in [docs/GDD/11 Stress System.md](docs/GDD/11%20Stress%20System.md), which is the sole authority for pressure/threat values. This document no longer defines its own pressure formula (see §Balancing Philosophy).
 - Puzzle completion and failure must be visible to the UI and reflected in the match state.
 - The system must support 2–4 players online and remain deterministic under network variance.
+- **Design authority for all puzzle content — principles, communication taxonomy, fairness rules, replayability standards, production constraints, and the evaluation framework that every current and future puzzle must satisfy — is owned by [docs/GDD/Puzzle Design Bible.md](Puzzle%20Design%20Bible.md). This document defines the runtime infrastructure; the Puzzle Design Bible defines what that infrastructure must serve.**
 
 ## Player Experience Goals
 
@@ -243,6 +244,8 @@ A puzzle fails when:
 Failure should produce a meaningful but recoverable cost.
 
 ## Balancing Philosophy
+
+> **Constants Authority:** All numeric values in this section — Diff scale, Diff MVP target range, Diff severe threshold, FailureSeverityTier noise contributions, and the unshared observation timeout — are owned by [`docs/GDD/Gameplay Constants Bible.md`](Gameplay%20Constants%20Bible.md) §Puzzle Constants. Values shown here are for design context only. Edit the Bible to change them.
 
 Puzzle balance should be based on four factors:
 

@@ -91,6 +91,8 @@ The game should allow objectives to change based on player success, creature esc
 
 ## Pressure Integration
 
+> **Constants Authority:** The numeric values in the table below (grace period, increment interval, D contribution amounts) are owned by [`docs/GDD/Gameplay Constants Bible.md`](Gameplay%20Constants%20Bible.md) §Objective Constants and §Pressure Constants. To change stall timing or D contributions, edit the Bible.
+
 This system emits exactly three event types to the Pressure System, and defines no pressure value itself:
 
 | Event | Emitted when | Effect on Delay (`D`) in 11 Stress System.md |

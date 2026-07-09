@@ -111,6 +111,10 @@ Consolidated index — each row's actual field-level detail is owned and defined
 
 ## Replicated State Inventory
 
+> **Constants Authority:** All tick rates, timeouts, snapshot sizes, and timing budgets in this section are owned by [`docs/GDD/Gameplay Constants Bible.md`](../docs/GDD/Gameplay%20Constants%20Bible.md) §Networking Constants. To change any network timing value, edit the Bible.
+>
+> **Known conflict:** This document currently lists creature world-position replication at 10 Hz. The Gameplay Constants Bible canonizes 20 Hz (`CREATURE_POSITION_TICK_RATE`) based on PZL-005's position buffer requirements. Do not update this document's creature rate until Open Question OQ-1 (Gameplay Constants Bible §Open Questions) is resolved by the design lead.
+
 What actually goes over the wire each tick, for capacity planning. Field-level schemas remain owned by each system's own document; this is a size/frequency index only.
 
 | Payload | Frequency | Approx. size | Defined in |
