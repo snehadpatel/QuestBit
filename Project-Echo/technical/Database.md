@@ -61,7 +61,7 @@ Every saved field should have a defined meaning and a migration path. The team s
 
 ### Decision 3: Separate Gameplay State from Profile State
 
-Match state should not be persisted in the same way as account progression. They have different failure modes and update frequencies.
+Match state should not be persisted in the same way as account progression. They have different failure modes and update frequencies. Concretely: match state (Pressure, Puzzle, Objective) is Host-authoritative and never written here at all (see [technical/NetworkArchitecture.md §Save Synchronization](NetworkArchitecture.md#save-synchronization)); only account progression is. Each connected client writes its own progression record independently and directly — this table is never populated via a relay through the match Host.
 
 ## Future Improvements
 

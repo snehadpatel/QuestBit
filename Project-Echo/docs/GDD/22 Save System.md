@@ -69,7 +69,7 @@ The game should save only the state that matters to player continuity and progre
 
 ### Decision 2: The Core Game Loop Must Not Rely on Local Save State Alone
 
-Session continuity must be protected by server-authoritative or cloud-backed persistence where possible.
+Session continuity must be protected by server-authoritative or cloud-backed persistence where possible. In-session continuity specifically (surviving a disconnect mid-match) is a networking concern, not a save-system one — see [technical/NetworkArchitecture.md §Disconnect Recovery](../../../technical/NetworkArchitecture.md#disconnect-recovery-non-host) and §Host Migration. This document owns what happens to a player's account after the match ends, not during it.
 
 ### Decision 3: Save Failure Must Be Recoverable
 
