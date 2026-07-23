@@ -1,0 +1,17 @@
+{
+    "name": "Echo.UI",
+    "rootNamespace": "Echo.UI",
+    "references": [
+        "Echo.Core",
+        "Echo.Gameplay"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

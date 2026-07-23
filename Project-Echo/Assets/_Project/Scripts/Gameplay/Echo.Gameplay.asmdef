@@ -1,0 +1,16 @@
+{
+    "name": "Echo.Gameplay",
+    "rootNamespace": "Echo.Gameplay",
+    "references": [
+        "Echo.Core"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
