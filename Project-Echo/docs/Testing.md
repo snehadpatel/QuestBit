@@ -49,7 +49,11 @@ flowchart LR
 - Poor reproducibility can slow bug fixing.
 - Design issues can be mistaken for technical bugs without structured playtesting.
 
-## Open Questions
+## Open Questions — Resolved
 
-- What test matrix is required for the first public playtest?
-- Which issues should be treated as release blockers versus post-launch fixes?
+- **What test matrix is required for the first public playtest?**
+  - ✅ **Answer**: The minimum test matrix for the first public playtest must cover: (1) 2-player and 4-player sessions, (2) host migration or host-disconnect recovery, (3) a complete match flow end-to-end, (4) voice communication quality under normal and degraded network conditions, (5) at least one full objective chain with the asymmetric reality system active, and (6) creature escalation through all states (Probing → Tracking → Hunting).
+
+- **Which issues should be treated as release blockers versus post-launch fixes?**
+  - ✅ **Answer**: **Release blockers** are: crashes, data loss, network desync that breaks match state, voice chat failure with no fallback, and any bug that makes the match uncompletable. **Post-launch fixes** are: visual glitches that don't affect gameplay, minor audio sync issues, balance concerns, cosmetic rendering errors, and edge-case creature pathfinding anomalies.
+
