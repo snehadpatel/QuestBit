@@ -17,9 +17,8 @@ This document does not define the broader platform strategy beyond the Steam rel
 
 ## Dependencies
 
-- Steamworks integration must align with the game's multiplayer and backend services.
-- The game must remain compatible with PlayFab and Photon Fusion 2, running in Host Mode ([ADR-0002](../../technical/ADR/0002-network-topology-host-mode.md)).
-- **Steam Rich Presence/lobby invites map directly to a Photon Fusion Session, not to a PlayFab-side construct.** When a player invites a Steam friend, the invite carries the inviting client's Photon Session identifier (the same identifier PlayFab's matchmaking-ticket flow would otherwise hand out, per 21 Backend.md's corrected flow); accepting the invite joins that Photon Session directly. This closes the gap the production audit flagged: Steam-friend-invite-to-lobby now has a defined path into the same session system every other document assumes, instead of two unreconciled join mechanisms.
+- Steamworks integration must align with the game’s multiplayer and backend services.
+- The game must remain compatible with PlayFab and Photon Fusion 2.
 - The release plan must account for Steam review requirements and platform best practices.
 
 ## Diagrams
@@ -28,18 +27,17 @@ This document does not define the broader platform strategy beyond the Steam rel
 
 ```mermaid
 flowchart TD
-    A[Steam Launch] --> B[User Authentication via Steam Ticket to PlayFab]
+    A[Steam Launch] --> B[User Authentication]
     B --> C[Storefront and Library]
-    C --> D[Steam Rich Presence carries Photon Session ID]
-    D --> E[Friend accepts invite - joins Photon Fusion Session directly]
-    E --> F[Achievements and Presence]
+    C --> D[Multiplayer Session]
+    D --> E[Achievements and Presence]
 ```
 
 ## Examples
 
 ### Example 1: Steam Friends Integration
 
-A player hosting a match (the elected Fusion Host, per ADR-0002) sets their Steam Rich Presence to include the current Photon Session identifier. A friend invited from Steam accepts and joins that Photon Session directly — Steam brokers the invite and identity, Photon brokers the actual connection, and PlayFab is not in this path at all.
+Players can invite friends directly from Steam to join a lobby or existing session.
 
 ### Example 2: Achievements
 

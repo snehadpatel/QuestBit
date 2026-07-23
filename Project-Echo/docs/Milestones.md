@@ -48,7 +48,11 @@ flowchart TD
 - Milestones that are too broad create poor visibility.
 - Team members may optimize for implementation speed instead of playtest quality.
 
-## Open Questions
+## Open Questions — Resolved
 
-- What is the threshold for a milestone to be considered stable enough for external playtests?
-- Should internal milestone reviews include a design and technical sign-off?
+- **What is the threshold for a milestone to be considered stable enough for external playtests?**
+  - ✅ **Answer**: A milestone is externally testable when it passes a **Playtest Readiness Gate**: (1) the match flow is completable end-to-end without crashes, (2) at least one session can run for 20+ minutes without critical bugs, (3) networking supports at least 2 concurrent players without desync, and (4) voice communication is functional. The **Vertical Slice** milestone is the first external playtest gate.
+
+- **Should internal milestone reviews include a design and technical sign-off?**
+  - ✅ **Answer**: **Yes.** Every milestone requires dual sign-off: the Lead Designer confirms the player experience meets GDD intent, and the Principal Architect confirms technical stability and architecture compliance. Both must approve before the milestone is considered complete.
+

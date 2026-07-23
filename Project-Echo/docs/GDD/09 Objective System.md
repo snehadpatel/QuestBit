@@ -18,8 +18,7 @@ This document does not define every individual objective in the first facility.
 
 ## Dependencies
 
-- The objective system must integrate with the puzzle framework and player systems.
-- Objective stall and progress events are the sole input to the Delay meter defined in [docs/GDD/11 Stress System.md](docs/GDD/11%20Stress%20System.md), which is the sole authority for pressure/threat. This document no longer describes pressure consequence in prose; it emits the specific events listed in §Pressure Integration below.
+- The objective system must integrate with the puzzle framework, player systems, and creature pressure system.
 - Objectives must be understandable to players and maintainable by designers.
 - The system must support short-session pacing and dynamic difficulty.
 
@@ -76,7 +75,7 @@ The objectives should feel like a coherent sequence of actions inside the facili
 
 ### Decision 3: Failure Should Change the State of the Match
 
-Failure should not simply reset the objective. It contributes directly to the Delay meter (see §Pressure Integration) and may alter the environment or change the future set of options available to the team.
+Failure should not simply reset the objective. It should create pressure, alter the environment, or change the future set of options available to the team.
 
 ### Decision 4: The System Must Support Branching
 
@@ -87,21 +86,7 @@ The game should allow objectives to change based on player success, creature esc
 - The objective count should keep the session between 15 and 30 minutes.
 - Hard objectives should be paired with enough support information to keep the team moving.
 - The game should avoid forcing the team into long periods of idle waiting.
-- Failed objectives should create a meaningful cost without completely stalling the match; the specific cost is the Delay meter's zero-passive-decay rule (11 Stress System.md) — waiting alone never reduces it, only a Progress or Resolved event does.
-
-## Pressure Integration
-
-> **Constants Authority:** The numeric values in the table below (grace period, increment interval, D contribution amounts) are owned by [`docs/GDD/Gameplay Constants Bible.md`](Gameplay%20Constants%20Bible.md) §Objective Constants and §Pressure Constants. To change stall timing or D contributions, edit the Bible.
-
-This system emits exactly three event types to the Pressure System, and defines no pressure value itself:
-
-| Event | Emitted when | Effect on Delay (`D`) in 11 Stress System.md |
-|---|---|---|
-| `ObjectiveStalled` | An Active objective has produced no `Progress` event for 30.0s (the grace period), then again every 12.0s thereafter | `D += 1.00` per occurrence, capped at 10 |
-| `ObjectiveProgress` | Any partial-completion state change on the active objective (e.g., one step of a multi-step objective per Example 1) | `D -= 4.00` instantly (floor 0) |
-| `ObjectiveResolved` | The objective reaches its Resolved state | `D` resets to 0 instantly |
-
-The ObjectiveManager (see Implementation Notes) is responsible for firing these three events; it does not compute or store a Delay or pressure value itself.
+- Failed objectives should create a meaningful cost without completely stalling the match.
 
 ## Developer Notes
 
@@ -116,7 +101,6 @@ The ObjectiveManager (see Implementation Notes) is responsible for firing these 
 - Use a shared objective state model with fields for status, progress, dependency IDs, and completion conditions.
 - Tie objective completion to the match flow and progression tracker.
 - Use event-based callbacks so new objective types can be added without rewriting the manager.
-- The ObjectiveManager must fire `ObjectiveStalled`, `ObjectiveProgress`, and `ObjectiveResolved` per the §Pressure Integration table above; these are the only events 11 Stress System.md listens for from this system.
 
 ## Future Improvements
 

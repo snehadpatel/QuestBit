@@ -22,7 +22,6 @@ This document does not define the full voice backend implementation, but it does
 - Players must be able to communicate reliably under pressure.
 - The system must remain functional if voice chat quality degrades or is unavailable.
 - The communication system must support the asymmetric reality model.
-- This system's three information states (Unshared, Shared, Confirmed — see §Implementation Notes below) are read directly by [docs/GDD/11 Stress System.md](docs/GDD/11%20Stress%20System.md) to drive the Uncertainty meter: an item stuck Unshared for more than 20 seconds raises Uncertainty; reaching Confirmed lowers it. This document owns the state definitions; 11 Stress System.md owns what happens to pressure as a result of them.
 
 ## Diagrams
 

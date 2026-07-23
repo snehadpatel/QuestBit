@@ -19,7 +19,7 @@ This document does not replace engine-specific implementation files.
 
 - Unity 6 is the engine runtime.
 - C# is the implementation language.
-- Photon Fusion 2 provides authoritative networking services, in Host Mode ([ADR-0001](ADR/0001-photon-fusion-2-as-networking-middleware.md), [ADR-0002](ADR/0002-network-topology-host-mode.md)) — `GameStateManager` below runs on whichever connected client is the elected Host, not on separate infrastructure.
+- Photon Fusion 2 provides authoritative networking services.
 - PlayFab provides account and persistence services.
 - Vivox provides voice communication.
 
@@ -43,18 +43,12 @@ flowchart TD
 
 ```mermaid
 flowchart LR
-    A[GameStateManager - runs on elected Host] --> B[ObjectiveSystem]
+    A[GameStateManager] --> B[ObjectiveSystem]
     A --> C[CreatureSystem]
     A --> D[PlayerSystem]
     A --> E[PuzzleSystem]
-    A --> G[PressureSystem]
-    A --> F[UISystem - local to each client]
-    B --> G
-    E --> G
-    G --> C
+    A --> F[UISystem]
 ```
-
-`PressureSystem` (11 Stress System.md) was missing from this diagram in the prior version of this document — a gap, since it's the system Objective, Puzzle, and Creature all now route through as the single authoritative escalation value (see 11 Stress System.md §Consuming Systems). `UISystem` is marked local because, unlike the other four, it runs identically but independently on every client rendering the replicated state — it is never authoritative.
 
 ## Examples
 
@@ -71,7 +65,7 @@ A player presses the interact key. The InputController sends a request to the In
 - The same object is used by multiple players in close succession.
 - A client sends an interaction request while the server is still resolving a prior action.
 - A network disconnect occurs during creature state transition.
-- The host leaves after objective state has already changed — resolved by Fusion's native host migration with state hand-off; see technical/NetworkArchitecture.md §Host Migration.
+- The host leaves after objective state has already changed.
 
 ## Design Decisions
 
@@ -99,8 +93,14 @@ The engine should not contain business logic that belongs in data-driven systems
 - Too much authority on the client can create desync and cheating concerns.
 - Content-driven architectures can become hard to maintain if the schema is not controlled.
 
-## Open Questions
+## Open Questions — Resolved
 
-- Is a dedicated event bus necessary for the MVP or can a service locator pattern suffice?
-- How much state should be replicated versus computed locally for performance reasons?
-- Should the architecture favor a single monolithic GameManager or a distributed service model?
+- **Is a dedicated event bus necessary for the MVP or can a service locator pattern suffice?**
+  - ✅ **Answer**: **A dedicated event bus is necessary.** Cross-system communication (creature escalation → audio response, objective completion → UI update, accessibility settings → rendering + audio) requires loose coupling. A service locator alone creates tight coupling between systems. See the event bus design in the QuestBit architecture docs (`docs/architecture/06_event_bus.md`) for a reference implementation using strongly-typed events.
+
+- **How much state should be replicated versus computed locally for performance reasons?**
+  - ✅ **Answer**: Per [ADR-005](technical/ADR/ADR-005-authority-model.md), all gameplay-critical state (objectives, creature, puzzles, hazards) is server-replicated. Only player movement and local audio/VFX feedback are computed locally. This prioritizes consistency over minimal bandwidth usage.
+
+- **Should the architecture favor a single monolithic GameManager or a distributed service model?**
+  - ✅ **Answer**: **Distributed service model.** The `GameStateManager` orchestrates high-level flow (match start, match end, phase transitions), but individual systems (ObjectiveSystem, CreatureSystem, PuzzleSystem, PlayerSystem, UISystem) own their own state and communicate via the event bus. This is consistent with Design Decision 2 ("Keep Gameplay Systems Modular").
+

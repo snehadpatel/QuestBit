@@ -49,7 +49,11 @@ flowchart TD
 - Poor monetization design can reduce trust in the game.
 - Too much paid content too early can damage perceived value.
 
-## Open Questions
+## Open Questions — Resolved
 
-- What is the preferred initial price point for Steam?
-- How much premium content is appropriate for the first post-launch phase?
+- **What is the preferred initial price point for Steam?**
+  - ✅ **Answer**: Target **$19.99–$24.99 USD** for the base game. This aligns with comparable indie co-op horror titles (Lethal Company, Content Warning, Phasmophobia at launch). A lower entry price reduces the barrier for group purchases since the game requires 2–4 players.
+
+- **How much premium content is appropriate for the first post-launch phase?**
+  - ✅ **Answer**: The first post-launch content pack (3–6 months after release) should include **one new facility, one new creature variant, and a cosmetic bundle**. This demonstrates ongoing support without fragmenting the player base. Cosmetics should remain purely optional, and new facilities should be priced as standalone DLC ($4.99–$7.99).
+
